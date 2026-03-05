@@ -35,6 +35,7 @@ Veja tambem:
 from __future__ import annotations
 
 import logging
+from typing import Optional
 
 from correios_reverso.auth import AuthManager
 from correios_reverso.config import Config
@@ -74,7 +75,7 @@ class CorreiosClient:
         ...     endereco = client.auxiliares.consultar_cep("01001000")
     """
 
-    def __init__(self, config: Config | None = None):
+    def __init__(self, config: Optional[Config] = None):
         self.config = config or Config.from_env()
         self.http = HTTPClient(self.config)
         self.auth = AuthManager(self.http, self.config)

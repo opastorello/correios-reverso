@@ -45,7 +45,7 @@ from __future__ import annotations
 
 import base64
 import logging
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -218,7 +218,7 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         bairro: Annotated[str, Field(description="Bairro")],
         cidade: Annotated[str, Field(description="Cidade")],
         uf: Annotated[str, Field(description="UF")],
-        email: Annotated[str | None, Field(description="Email")] = None,
+        email: Annotated[Optional[str], Field(description="Email")] = None,
     ) -> dict[str, Any]:
         """Cria um novo destinatário."""
         req = DestinatarioRequest(
@@ -269,7 +269,7 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         cidade: Annotated[str, Field(description="Cidade")],
         uf: Annotated[str, Field(description="UF")],
         cpf_cnpj: Annotated[str, Field(description="CPF/CNPJ")],
-        email: Annotated[str | None, Field(description="Email")] = None,
+        email: Annotated[Optional[str], Field(description="Email")] = None,
     ) -> dict[str, Any]:
         """Cria um novo remetente."""
         req = RemetenteRequest(

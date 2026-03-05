@@ -24,11 +24,13 @@ Example:
 
 from __future__ import annotations
 
+from typing import Optional
+
 
 class CorreiosError(Exception):
     """Exceção base para todas as operações Correios."""
 
-    def __init__(self, message: str, status_code: int | None = None, response_body: str | None = None):
+    def __init__(self, message: str, status_code: Optional[int] = None, response_body: Optional[str] = None):
         super().__init__(message)
         self.status_code = status_code
         self.response_body = response_body

@@ -41,6 +41,8 @@ Example:
 
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -56,22 +58,22 @@ class Endereco(BaseModel):
     bairro: str
     cidade: str
     uf: str
-    cepFormatado: str | None = None
+    cepFormatado: Optional[str] = None
 
 
 class PessoaPrePostagem(BaseModel):
     """Pessoa (remetente ou destinatário) dentro de uma pré-postagem."""
-    codigo: str | None = None
+    codigo: Optional[str] = None
     indicadorMalote: str = "N"
     dddTelefone: str = ""
     telefone: str = ""
     dddCelular: str = ""
     celular: str = ""
     email: str = ""
-    cpfCnpj: str | None = None
-    documentoEstrangeiro: str | None = None
+    cpfCnpj: Optional[str] = None
+    documentoEstrangeiro: Optional[str] = None
     nome: str = ""
-    endereco: Endereco | None = None
+    endereco: Optional[Endereco] = None
 
 
 # ---------------------------------------------------------------------------
@@ -86,12 +88,12 @@ class ItemDeclaracaoConteudo(BaseModel):
 
 class ServicoAdicionalItem(BaseModel):
     codigoServicoAdicional: str
-    nomeServicoAdicional: str | None = None
-    siglaServicoAdicional: str | None = None
-    valorDeclarado: float | None = None
-    orientacaoEntregaVizinho: str | None = None
-    tipoChecklist: str | None = None
-    subitensCheckList: list | None = None
+    nomeServicoAdicional: Optional[str] = None
+    siglaServicoAdicional: Optional[str] = None
+    valorDeclarado: Optional[float] = None
+    orientacaoEntregaVizinho: Optional[str] = None
+    tipoChecklist: Optional[str] = None
+    subitensCheckList: Optional[list] = None
 
 
 # ---------------------------------------------------------------------------
@@ -131,15 +133,15 @@ class PrePostagemItem(BaseModel):
     larguraInformada: str = ""
     comprimentoInformado: str = ""
     codigoFormatoObjetoInformado: str = ""
-    remetente: PessoaPrePostagem | None = None
-    destinatario: PessoaPrePostagem | None = None
+    remetente: Optional[PessoaPrePostagem] = None
+    destinatario: Optional[PessoaPrePostagem] = None
     itensDeclaracaoConteudo: list[ItemDeclaracaoConteudo] = []
-    listaServicoAdicional: list[ServicoAdicionalItem] | None = None
-    dataValidadeLogReversa: str | None = None
-    chaveNFe: str | None = None
-    tipoRotulo: str | None = None
-    solicitarColeta: str | None = None
-    codigoObjetoIda: str | None = None
+    listaServicoAdicional: Optional[list[ServicoAdicionalItem]] = None
+    dataValidadeLogReversa: Optional[str] = None
+    chaveNFe: Optional[str] = None
+    tipoRotulo: Optional[str] = None
+    solicitarColeta: Optional[str] = None
+    codigoObjetoIda: Optional[str] = None
 
 
 class PrePostagemListResponse(BaseModel):
@@ -154,23 +156,23 @@ class CriarPrePostagemRequest(BaseModel):
     codigoServico: str
     servico: str = ""
     logisticaReversa: str = "N"
-    pesoInformado: str | None = None
-    alturaInformada: str | None = None
-    comprimentoInformado: str | None = None
-    diametroInformado: str | None = None
-    larguraInformada: str | None = None
+    pesoInformado: Optional[str] = None
+    alturaInformada: Optional[str] = None
+    comprimentoInformado: Optional[str] = None
+    diametroInformado: Optional[str] = None
+    larguraInformada: Optional[str] = None
     codigoFormatoObjetoInformado: str = "2"
-    chaveNFe: str | None = None
-    numeroNotaFiscal: str | None = None
+    chaveNFe: Optional[str] = None
+    numeroNotaFiscal: Optional[str] = None
     cienteObjetoNaoProibido: int = 1
-    rfidObjeto: str | None = None
-    observacao: str | None = None
+    rfidObjeto: Optional[str] = None
+    observacao: Optional[str] = None
     itensDeclaracaoConteudo: list[ItemDeclaracaoConteudo] = []
     listaServicoAdicional: list[ServicoAdicionalItem] = []
-    dataValidadeLogReversa: str | None = None
-    dataPrevistaPostagem: str | None = None
-    prazoPostagem: str | None = None
-    codigoObjetoIda: str | None = None
+    dataValidadeLogReversa: Optional[str] = None
+    dataPrevistaPostagem: Optional[str] = None
+    prazoPostagem: Optional[str] = None
+    codigoObjetoIda: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------
@@ -279,7 +281,7 @@ class ProcessamentoRotulo(BaseModel):
     nuCartaoPostagem: str = ""
     dataAlteracao: str = ""
     statusProcessamento: str = ""
-    erroProcessamento: str | None = None
+    erroProcessamento: Optional[str] = None
     url: str = ""
 
 

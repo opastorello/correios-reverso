@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
+from typing import Any, Optional
 
 import requests
 
@@ -104,7 +104,7 @@ class HTTPClient:
         # POST e DELETE não fazem retry (risco de duplicação)
         is_idempotent = method.upper() not in _NON_IDEMPOTENT_METHODS
         attempts = self.config.retry_attempts if is_idempotent else 1
-        last_exc: Exception | None = None
+        last_exc: Optional[Exception] = None
 
         for attempt in range(1, attempts + 1):
             try:

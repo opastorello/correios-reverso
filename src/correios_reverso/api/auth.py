@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Depends, Header, HTTPException
 
@@ -26,7 +26,7 @@ def get_valid_tokens() -> set[str]:
 
 
 async def verify_token(
-    authorization: Annotated[str | None, Header()] = None,
+    authorization: Annotated[Optional[str], Header()] = None,
 ) -> str:
     """Dependency que valida Bearer token.
 

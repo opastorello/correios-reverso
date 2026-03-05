@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 import responses
 
+
 from correios_reverso.config import Config
 from correios_reverso.http_client import HTTPClient
 from correios_reverso.models import RemetenteRequest

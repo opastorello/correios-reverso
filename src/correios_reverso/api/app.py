@@ -29,8 +29,9 @@ import logging
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from correios_reverso import CorreiosClient
 from correios_reverso.api.routes import (
@@ -60,9 +61,14 @@ async def lifespan(app: FastAPI):
         raise
 
     # Montar MCP após client estar pronto
-    _mount_mcp(app)
+    mcp_app = _mount_mcp(app)
 
-    yield
+    if mcp_app is not None:
+        # FastMCP 3.x exige lifespan ativo para o session manager HTTP.
+        async with mcp_app.router.lifespan_context(mcp_app):
+            yield
+    else:
+        yield
 
     # Shutdown: fechar client
     logger.info("Fechando CorreiosClient...")
@@ -75,7 +81,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Correios Reverso API",
     description="API REST e MCP server para automação de pré-postagens Correios",
-    version="0.2.0",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
@@ -100,7 +106,7 @@ async def root() -> dict[str, Any]:
     """Informações da API."""
     return {
         "name": "Correios Reverso API",
-        "version": "0.2.0",
+        "version": "1.0.0",
         "docs": "/docs",
         "mcp": "/mcp",
     }
@@ -117,9 +123,12 @@ app.include_router(auxiliares_router)
 
 # Exception handler global
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(request: Request, exc: HTTPException):
     """Handler global para HTTPException."""
-    return {"error": exc.detail, "status_code": exc.status_code}
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": exc.detail, "status_code": exc.status_code},
+    )
 
 
 # FastMCP montado dentro do lifespan
@@ -130,19 +139,21 @@ def _mount_mcp(app: FastAPI):
     """Monta o FastMCP server na rota /mcp."""
     global _mcp_mounted
     if _mcp_mounted:
-        return
+        return getattr(app.state, "mcp_app", None)
 
     try:
-        from fastmcp import FastMCP
-
         from correios_reverso.mcp.server import create_mcp_server
 
         mcp = create_mcp_server(app.state.client)
-        mcp_app = mcp.http_app()
+        # Expor o protocolo MCP exatamente em /mcp ao montar no app principal.
+        mcp_app = mcp.http_app(path="/")
         app.mount("/mcp", mcp_app)
+        app.state.mcp_app = mcp_app
         _mcp_mounted = True
         logger.info("FastMCP montado em /mcp")
+        return mcp_app
     except ImportError:
         logger.warning("FastMCP não disponível. MCP server desabilitado.")
     except Exception as e:
         logger.error(f"Erro ao montar FastMCP: {e}")
+        return None

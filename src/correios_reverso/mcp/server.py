@@ -43,6 +43,7 @@ Uso:
 
 from __future__ import annotations
 
+import base64
 import logging
 from typing import Annotated, Any
 
@@ -53,6 +54,7 @@ from correios_reverso import CorreiosClient
 from correios_reverso.models import (
     CriarPrePostagemRequest,
     DestinatarioRequest,
+    ItemDeclaracaoConteudo,
     RemetenteRequest,
 )
 
@@ -116,6 +118,12 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         codigo_servico: Annotated[str, Field(description="Código do serviço (ex: 03298)")],
         servico: Annotated[str, Field(description="Descrição do serviço (ex: 03298 - PAC CONTRATO AG)")],
         peso_gramas: Annotated[str, Field(description="Peso em gramas")] = "500",
+        comprimento_cm: Annotated[str, Field(description="Comprimento em cm")] = "25",
+        altura_cm: Annotated[str, Field(description="Altura em cm")] = "12",
+        largura_cm: Annotated[str, Field(description="Largura em cm")] = "18",
+        item_conteudo: Annotated[str, Field(description="Descricao resumida do conteudo")] = "Produto",
+        item_quantidade: Annotated[int, Field(description="Quantidade do item")] = 1,
+        item_valor: Annotated[float, Field(description="Valor unitario do item")] = 50.0,
         logistica_reversa: Annotated[bool, Field(description="É logística reversa?")] = False,
     ) -> dict[str, Any]:
         """Cria uma nova pré-postagem (normal ou logística reversa)."""
@@ -148,6 +156,16 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
             codigoServico=codigo_servico,
             servico=servico,
             pesoInformado=peso_gramas,
+            comprimentoInformado=comprimento_cm,
+            alturaInformada=altura_cm,
+            larguraInformada=largura_cm,
+            itensDeclaracaoConteudo=[
+                ItemDeclaracaoConteudo(
+                    conteudo=item_conteudo,
+                    quantidade=item_quantidade,
+                    valor=item_valor,
+                )
+            ],
             logisticaReversa="S" if logistica_reversa else "N",
         )
         return client.postagem.criar(req)
@@ -220,7 +238,8 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         id_destinatario: Annotated[str, Field(description="ID do destinatário")],
     ) -> dict[str, Any]:
         """Exclui um destinatário."""
-        return client.destinatarios.excluir(id_destinatario)
+        client.destinatarios.excluir(id_destinatario)
+        return {"ok": True, "id": id_destinatario}
 
     # ============================================================
     # REMETENTES
@@ -271,7 +290,8 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         id_remetente: Annotated[str, Field(description="ID do remetente")],
     ) -> dict[str, Any]:
         """Exclui um remetente."""
-        return client.remetentes.excluir(id_remetente)
+        client.remetentes.excluir(id_remetente)
+        return {"ok": True, "id": id_remetente}
 
     # ============================================================
     # ETIQUETAS
@@ -282,14 +302,16 @@ def create_mcp_server(client: CorreiosClient) -> FastMCP:
         ids_prepostagem: Annotated[list[str], Field(description="IDs das pré-postagens")],
     ) -> dict[str, Any]:
         """Inicia impressão de etiquetas (assíncrono). Retorna ID do recibo."""
-        return client.etiqueta.iniciar_impressao(ids_prepostagem)
+        id_recibo = client.etiqueta.iniciar_impressao(ids_prepostagem)
+        return {"idRecibo": id_recibo}
 
     @mcp.tool(annotations={"readOnlyHint": True})
     async def download_etiqueta(
         id_recibo: Annotated[str, Field(description="ID do recibo de impressão")],
     ) -> str:
         """Download do PDF da etiqueta em base64."""
-        return client.etiqueta.download_rotulo(id_recibo)
+        pdf_bytes = client.etiqueta.download_rotulo(id_recibo)
+        return base64.b64encode(pdf_bytes).decode("ascii")
 
     @mcp.tool(annotations={"readOnlyHint": True})
     async def listar_processamentos_etiqueta() -> list[dict[str, Any]]:

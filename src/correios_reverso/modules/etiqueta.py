@@ -112,6 +112,10 @@ class Etiqueta:
             "status": ["EM_PROCESSAMENTO", "FINALIZADO", "ERRO_PROCESSAMENTO"],
         }
         data = self._http.get_json("/processamentosrotulos", params=params)
+        # A API pode retornar `numero` como inteiro; normalizamos para string.
+        for item in data.get("itens", []) if isinstance(data, dict) else []:
+            if isinstance(item, dict) and "numero" in item and item["numero"] is not None:
+                item["numero"] = str(item["numero"])
         return ProcessamentoRotuloListResponse.model_validate(data)
 
     def gerar_declaracao_conteudo(

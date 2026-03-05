@@ -1,12 +1,11 @@
 """Testes de validação dos modelos Pydantic."""
 
-from correios_reverso.models import (
+from correios_reverso.models import (  # noqa: PGH003
     CriarPrePostagemRequest,
     DestinatarioRequest,
     Endereco,
     PageInfo,
     PessoaPrePostagem,
-    PrePostagemItem,
     PrePostagemListResponse,
     RemetenteRequest,
     ServicoDisponivel,

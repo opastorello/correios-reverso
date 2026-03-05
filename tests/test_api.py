@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import pytest
 from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
@@ -13,7 +14,8 @@ mock_client = MagicMock()
 @pytest.fixture(autouse=True)
 def mock_correios_client():
     """Mock do CorreiosClient para todos os testes."""
-    with patch("correios_reverso.api.app.CorreiosClient") as MockClient:
+    app_module = importlib.import_module("correios_reverso.api.app")
+    with patch.object(app_module, "CorreiosClient") as MockClient:
         MockClient.from_env.return_value = mock_client
         mock_client.login.return_value = None
         mock_client.close.return_value = None

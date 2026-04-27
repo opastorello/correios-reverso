@@ -26,6 +26,7 @@ Endpoints:
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -33,7 +34,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from correios_reverso import CorreiosClient
+from correios_reverso import CorreiosClient, __version__
 from correios_reverso.api.routes import (
     auxiliares_router,
     cancelamento_router,
@@ -81,14 +82,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Correios Reverso API",
     description="API REST e MCP server para automação de pré-postagens Correios",
-    version="1.0.0",
+    version=__version__,
     lifespan=lifespan,
 )
 
-# CORS para desenvolvimento
+_cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -106,7 +107,7 @@ async def root() -> dict[str, Any]:
     """Informações da API."""
     return {
         "name": "Correios Reverso API",
-        "version": "1.0.0",
+        "version": __version__,
         "docs": "/docs",
         "mcp": "/mcp",
     }

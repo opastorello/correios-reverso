@@ -16,7 +16,7 @@ Veja tambem:
     - README.md para visao geral
     - docs/DOCUMENTACAO_COMPLETA.md para exemplos detalhados
 
-Versao: 0.2.0
+Versao: 1.0.0
 Autor: Nicolas Pastorello
 Licenca: MIT
 """
@@ -32,7 +32,7 @@ from correios_reverso.exceptions import (
     CancelamentoError,
 )
 
-__version__ = "0.2.0"
+__version__ = "1.0.0"
 __author__ = "Nicolas Pastorello"
 __license__ = "MIT"
 

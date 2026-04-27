@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: correios-reverso:local
+    image: ghcr.io/opastorello/correios-reverso:latest
     container_name: correios-reverso-api
     env_file:
       - .env
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: correios-reverso:local
+    image: ghcr.io/opastorello/correios-reverso:latest
     container_name: correios-reverso-mcp
     env_file:
       - .env

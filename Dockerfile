@@ -14,7 +14,7 @@ RUN apt-get update \
 COPY pyproject.toml README.md /app/
 COPY src /app/src
 RUN pip install --upgrade pip \
-    && pip install ".[api]" "fastmcp>=3.0.0b1"
+    && pip install ".[api]" "fastmcp>=3.0.0"
 
 # Codigo completo
 COPY . /app
